@@ -1,0 +1,52 @@
+/* Synthetic analysis derivation. Run advanced.py first.
+   Not a compliant ADaM deliverable. SAS execution not yet verified. */
+%let root=CHANGE_TO_PORTFOLIO_DIRECTORY;
+data subjects;
+  infile "&root./results/advanced/analysis_subjects.csv" dsd firstobs=2 truncover;
+  length USUBJID $20 ARM $10 DOSE $19;
+  input USUBJID :$20. ARM :$10. DOSE :$19.;
+  TRTDTM=input(DOSE,e8601dt19.);
+  format TRTDTM datetime19.;
+run;
+data source;
+  infile "&root./results/advanced/source_measurements.csv" dsd firstobs=2 truncover;
+  length USUBJID $20 TEST $8 DATETIME $19;
+  input USUBJID :$20. SEQ TEST :$8. DATETIME :$19. VALUE;
+  ADTM=input(DATETIME,e8601dt19.);
+  format ADTM datetime19.;
+run;
+proc sql;
+  create table joined as
+  select a.*,b.ARM,b.TRTDTM from source a inner join subjects b
+  on a.USUBJID=b.USUBJID where not missing(a.VALUE);
+quit;
+proc sort data=joined out=predose;
+  where ADTM < TRTDTM;
+  by USUBJID TEST ADTM SEQ;
+run;
+data baseline;
+  set predose;
+  by USUBJID TEST ADTM SEQ;
+  if last.TEST;
+  BASE=VALUE;
+  BASESRCSEQ=SEQ;
+  keep USUBJID TEST BASE BASESRCSEQ;
+run;
+proc sort data=joined; by USUBJID TEST; run;
+data analysis_sbp;
+  merge joined(in=a) baseline;
+  by USUBJID TEST;
+  if a;
+  length PARAMCD $8 ABLFL $1;
+  PARAMCD=TEST;
+  SRCSEQ=SEQ;
+  ADY=datepart(ADTM)-datepart(TRTDTM);
+  if ADY >= 0 then ADY=ADY+1;
+  AVAL=VALUE;
+  if not missing(BASE) then CHG=AVAL-BASE;
+  if not missing(BASE) and BASE ne 0 then PCHG=round(100*CHG/BASE,0.0001);
+  if not missing(BASESRCSEQ) and SRCSEQ=BASESRCSEQ then ABLFL='Y';
+  keep USUBJID ARM PARAMCD ADTM ADY AVAL BASE CHG PCHG ABLFL SRCSEQ BASESRCSEQ;
+run;
+proc export data=analysis_sbp outfile="&root./results/advanced/analysis_sbp_sas.csv" dbms=csv replace;
+run;

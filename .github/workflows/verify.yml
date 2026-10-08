@@ -10,11 +10,13 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Run six meaningful validation tests
+      - name: Run all clinical portfolio tests
         run: python -m unittest -v
-      - name: Generate synthetic study and reports
+      - name: Generate synthetic safety study and reports
         run: python pipeline.py
-      - name: Display AE summary
+      - name: Run analysis, reconciliation and query projects
+        run: python advanced.py
+      - name: Display safety summary
         run: cat results/ae_summary.csv
       - uses: actions/upload-artifact@v4
         with:

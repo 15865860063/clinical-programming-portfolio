@@ -47,3 +47,24 @@ SAS程序尚未在SAS环境运行；不得声称双程序验证通过。
 - docs/deliverables.md：交付说明与面试讨论。
 
 简历中应标注“个人模拟临床数据项目”，并在实际运行、理解代码后描述成果。
+
+## 新增项目
+
+三个作品使用独立模拟数据，均可执行，不把它们写成三项真实药企研究经历。
+
+|项目|适用岗位|核心交付|
+|---|---|---|
+|[纵向分析数据集派生与溯源](docs/advanced-projects.md#项目二纵向分析数据集派生与溯源)|SAS临床统计程序员|基线、研究日、变化值、来源序号；SAS代码待验证|
+|[EDC与实验室对账](docs/advanced-projects.md#项目三edc与外部实验室数据对账)|临床数据管理、数据编程|双方缺失、重复键、单位及数值核查|
+|[Query管理与锁库准备](docs/advanced-projects.md#项目四query状态管理与锁库准备演示)|临床数据管理|SQLite状态记录、审计历史、aging及准备检查|
+
+运行新增作品：
+
+```text
+python -m unittest -v
+python advanced.py
+```
+
+输出在results/advanced/。再次运行需要全新输出目录，程序不会覆盖已有Query数据库。
+详见[设计规范](docs/advanced-projects.md)；六项原有测试与十六项新增测试共22项。
+目前仍是教育作品，非CDISC合规申报或经验证的EDC系统。
