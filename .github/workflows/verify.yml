@@ -1,0 +1,22 @@
+name: Verify synthetic clinical portfolio
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run six meaningful validation tests
+        run: python -m unittest -v
+      - name: Generate synthetic study and reports
+        run: python pipeline.py
+      - name: Display AE summary
+        run: cat results/ae_summary.csv
+      - uses: actions/upload-artifact@v4
+        with:
+          name: synthetic-clinical-results
+          path: results/
