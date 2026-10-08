@@ -33,7 +33,8 @@ python pipeline.py
 
 ## 验证状态
 
-GitHub自动运行结果以Actions实际状态为准。
+已确认[首次运行](https://github.com/15865860063/clinical-programming-portfolio/actions/runs/37749842185)成功：六项测试通过，生成120名受试者、184条AE记录与3条质疑。
+详见[验证报告](docs/validation.md)及[简历项目草稿](docs/resume-projects-zh.md)。
 SAS程序尚未在SAS环境运行；不得声称双程序验证通过。
 本项目没有正式SDTM/ADaM合规验证、医学编码或真实EDC交付。
 
